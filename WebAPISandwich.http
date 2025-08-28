@@ -1,0 +1,6 @@
+@WebAPISandwich_HostAddress = http://localhost:5197
+
+GET {{WebAPISandwich_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
