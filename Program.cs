@@ -5,13 +5,23 @@ using NuGet.Protocol.Core.Types;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using WebAPISandwich.Model;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// For Identity
+builder.Services.AddAuthorization();
+
+// For Entity Framework
+builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+    .AddEntityFrameworkStores<AppDbContext>();
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddConnections();
+builder.Services.AddConnections(); 
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AppDbConnection")));
 builder.Services.AddDbContext<SandwichContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -19,6 +29,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+app.MapIdentityApi<IdentityUser>(); //Its doing the same work as app.UseAuthentication() and app.UseAuthorization() by itself through extension method. //mapping identity users
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
